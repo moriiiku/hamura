@@ -1,88 +1,58 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>回帰するわたし</title>
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; background: #e9e6df; color: #292c28; font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif; min-height: 100vh; display: grid; place-items: center; padding: 20px; }
-    main { background: #f9f7f2; border-radius: 15px; width: min(100%, 420px); padding: 42px 28px 30px; box-shadow: 0 5px 24px #302b2010; }
-    .eyebrow { text-align: center; color: #77746d; font-size: 10px; letter-spacing: .23em; }
-    h1 { margin: 38px 0 20px; font-weight: 500; font-size: clamp(24px, 7vw, 30px); line-height: 1.7; text-align: center; letter-spacing: .05em; }
-    .intro { text-align: center; font-size: 13px; line-height: 2; color: #696b64; margin-bottom: 40px; }
-    label { display: block; font-size: 13px; margin-bottom: 10px; }
-    input, textarea { display: block; width: 100%; border: 1px solid #cbc9c0; border-radius: 7px; background: #fff; padding: 15px 13px; font: inherit; font-size: 15px; }
-    textarea { min-height: 135px; resize: vertical; line-height: 1.7; }
-    input:focus, textarea:focus { outline: 2px solid #7e9585; outline-offset: 2px; }
-    .field { margin-bottom: 24px; }
-    .note { color: #77746d; font-size: 11px; line-height: 1.8; margin: 4px 0 20px; }
-    button { display: block; width: 100%; background: #526c5b; color: white; border: 0; border-radius: 7px; padding: 16px; font: inherit; font-size: 14px; margin-top: 16px; cursor: pointer; }
-    button:disabled { opacity: .55; cursor: wait; }
-    .message { text-align: center; line-height: 2; margin-top: 45px; }
-    .message h2 { font-weight: 500; font-size: 21px; }
-    .message p { color: #696b64; font-size: 13px; }
-    .error { color: #a0372b; font-size: 12px; margin-top: 10px; min-height: 18px; }
-    [hidden] { display: none !important; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: #e9e6df;
+      color: #292c28;
+      font-family: sans-serif;
+    }
+    main {
+      background: #f9f7f2;
+      border-radius: 15px;
+      width: min(100%, 420px);
+      padding: 65px 28px;
+      text-align: center;
+    }
+    h1 {
+      font-weight: 500;
+      font-size: 28px;
+      line-height: 1.7;
+    }
+    p {
+      font-size: 13px;
+      line-height: 2;
+      color: #696b64;
+      margin: 30px 0 45px;
+    }
+    a {
+      display: block;
+      background: #526c5b;
+      color: white;
+      text-decoration: none;
+      border-radius: 7px;
+      padding: 16px;
+    }
   </style>
 </head>
 <body>
   <main>
-    <section id="formArea">
-      <div class="eyebrow">回帰するわたし</div>
-      <h1>あなたの記憶を<br>教えてください。</h1>
-      <p class="intro">かつて暮らした場所と、<br>そこで過ごした時間について。</p>
-      <form id="memoryForm">
-        <div class="field">
-          <label for="place">今までどこに住んでいましたか？</label>
-          <input id="place" name="place" maxlength="100" required autocomplete="off" placeholder="例：東京都八王子市">
-        </div>
-        <div class="field">
-          <label for="activity">そこで何をしていましたか？</label>
-          <textarea id="activity" name="activity" maxlength="1000" required placeholder="その場所でしていたことを自由に書いてください。"></textarea>
-        </div>
-        <p class="note">個人名や番地など、個人を特定できる情報は書かないでください。回答は作品制作のために使用します。</p>
-        <button id="send" type="submit">記憶を預ける →</button>
-        <div id="error" class="error" role="alert" aria-live="polite"></div>
-      </form>
-    </section>
-    <section id="thanks" class="message" hidden>
-      <h2>記憶を預かりました。</h2>
-      <p>あなたの記憶が、作品の一部になるかもしれません。</p>
-      <button type="button" id="again">別の記憶を預ける</button>
-    </section>
+    <h1>あなたの記憶を<br>教えてください。</h1>
+    <p>かつて暮らした場所と、<br>
+       そこで過ごした時間について。</p>
+    <a href="https://script.google.com/macros/s/AKfycbyDxLaNRN8-HdKfEHGfYo3_gswHYGA1WifwQc-hlsnRldEobUDz4ykSFVdhGGcUgCZc/exec">
+      記憶を預ける →
+    </a>
   </main>
-  <script>
-    const form = document.getElementById('memoryForm');
-    const button = document.getElementById('send');
-    const error = document.getElementById('error');
-    form.addEventListener('submit', function(event) {
-      event.preventDefault();
-      const place = document.getElementById('place').value.trim();
-      const activity = document.getElementById('activity').value.trim();
-      if (!place || !activity) return;
-      button.disabled = true;
-      button.textContent = '送信中…';
-      error.textContent = '';
-      google.script.run
-        .withSuccessHandler(function() {
-          document.getElementById('formArea').hidden = true;
-          document.getElementById('thanks').hidden = false;
-        })
-        .withFailureHandler(function() {
-          error.textContent = '送信できませんでした。時間をおいて再度お試しください。';
-          button.disabled = false;
-          button.textContent = '記憶を預ける →';
-        })
-        .submitMemory(place, activity);
-    });
-    document.getElementById('again').addEventListener('click', function() {
-      form.reset();
-      button.disabled = false;
-      button.textContent = '記憶を預ける →';
-      document.getElementById('thanks').hidden = true;
-      document.getElementById('formArea').hidden = false;
-    });
-  </script>
 </body>
 </html>
